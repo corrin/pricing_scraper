@@ -29,6 +29,7 @@ flake8-no-print = "^0.1.1"
 flake8 = "^4.0.1"
 black = "^23.3.0"
 pre-commit = "^3.7.0"
+pytest = "^8.3.5"
 
 [tool.black]
 line-length = 88
@@ -38,3 +39,5 @@ target-version = ['py38']
 max-line-length = 88
 exclude = [".git", "__pycache__", "venv", "build", "dist"]
 ignore = ["E203", "W503"] # Example ignores, adjust as needed
+extend-ignore = ["G004"] # Ignore G004 for f-strings in logging
+inline-quotes = "double"
