@@ -3,6 +3,7 @@ import requests
 from scraper.interfaces.authenticator import Authenticator
 import logging
 
+
 class SteelAndTubeAuthenticator(Authenticator):
     """
     Authenticator for Steel and Tube.
@@ -15,7 +16,8 @@ class SteelAndTubeAuthenticator(Authenticator):
         self.config = config
         self._session = requests.Session()
         logging.info(
-            "SteelAndTubeAuthenticator: Initialized with config for %s", config.get("name")
+            "SteelAndTubeAuthenticator: Initialized with config for %s",
+            config.get("name"),
         )
 
     def login(self: SteelAndTubeAuthenticator) -> requests.Session:
@@ -28,24 +30,32 @@ class SteelAndTubeAuthenticator(Authenticator):
 
         if not login_url or not username or not password:
             logging.error("SteelAndTubeAuthenticator: Missing login configuration.")
+            raise ValueError # Always terminate immediately on any error
             # In a real scenario, this would raise an exception or handle the error appropriately.
             # For now, we return the session without attempting login.
             return self._session
 
-        logging.info(f"SteelAndTubeAuthenticator: Attempting login to {login_url} with user {username}...")
+        logging.info(
+            f"SteelAndTubeAuthenticator: Attempting login to {login_url} with user {username}..."
+        )
 
-        # This is a placeholder for the actual login logic.
-        # You would typically send a POST request with credentials here.
+        # Actual form-based login logic
+        login_data = {
+            'username': username, # Assuming 'username' is the form field name
+            'password': password  # Assuming 'password' is the form field name
+        }
+
         try:
-            # Example placeholder:
-            # login_data = {"username": username, "password": password}
-            # response = self._session.post(login_url, data=login_data)
-            # response.raise_for_status() # Raise an exception for bad status codes
-            logging.info("SteelAndTubeAuthenticator: Login simulation successful.")
-            pass # Replace with actual login request
+            response = self._session.post(login_url, data=login_data)
+            response.raise_for_status() # Raise an exception for bad status codes
+
+            logging.info("SteelAndTubeAuthenticator: Login successful.")
+
         except requests.exceptions.RequestException as e:
             logging.error(f"SteelAndTubeAuthenticator: Login failed: {e}")
+            raise ValueError # ALWAYS FAIL IMMEDIATELY ON ANY ERROR
             # Handle login failure
+            # Removed the return self._session here as it would be unreachable after raising
 
         return self._session
 
@@ -54,5 +64,7 @@ class SteelAndTubeAuthenticator(Authenticator):
         Returns the current authenticated requests session.
         """
         if self._session is None:
-             self._session = requests.Session() # Ensure session exists even if login wasn't called
+            self._session = (
+                requests.Session()
+            )  # Ensure session exists even if login wasn't called
         return self._session

@@ -4,6 +4,7 @@ from typing import List
 from scraper.interfaces.parser import Parser
 from scraper.models.product import ProductData
 
+
 class SteelAndTubeParser(Parser):
     """
     Parser for Steel and Tube.

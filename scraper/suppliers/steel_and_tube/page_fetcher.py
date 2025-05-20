@@ -1,4 +1,6 @@
-Tfrom __future__ import annotations
+# scraper/suppliers/steel_and_tube/page_fetcher.py
+
+from __future__ import annotations
 import requests
 from typing import List
 from scraper.interfaces.page_fetcher import PageFetcher
@@ -36,5 +38,6 @@ class SteelAndTubePageFetcher(PageFetcher):
         #         pages_content.append(response.text)
         #     except requests.exceptions.RequestException as e:
         #         logging.error(f"SteelAndTubePageFetcher: Failed to fetch page: {e}")
+        #         raise ValueError # Added as per user instruction
 
         return pages_content

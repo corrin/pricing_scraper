@@ -13,35 +13,37 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+# Import functions from the supplier manager
+from scraper.supplier_manager import load_all_suppliers, get_available_suppliers, run_supplier
+
+
 def list_suppliers():
     """
     Lists all configured suppliers by checking directories in scraper/suppliers.
-    Exits if the directory is not found.
     """
     logging.info("Listing configured suppliers:")
-    suppliers_dir = 'scraper/suppliers'
-
-    supplier_dirs = [d for d in os.listdir(suppliers_dir) if os.path.isdir(os.path.join(suppliers_dir, d))]
-    for supplier in supplier_dirs:
+    available_suppliers = get_available_suppliers()
+    for supplier in available_suppliers:
         logging.info(f"- {supplier}")
 
 
 def start_scraping_process(supplier_name: str = None):
     """
-    Initiates the main scraper process.
-    This function is the entry point that would handle loading configurations,
-    importing components, and running the scraper for the specified supplier(s).
+    Initiates the main scraper process for the specified supplier(s).
     """
     if supplier_name:
         logging.info(f"Initiating scraper process for supplier: {supplier_name}")
-        # In a real application, logic to load config and run scraper for
-        # the specific supplier would be called here.
-        logging.info(f"Simulating scraping for supplier: {supplier_name}") # Placeholder output
+        run_supplier(supplier_name)
+        logging.info(f"Scraping process finished for {supplier_name}.")
     else:
         logging.info("Initiating scraper process for all configured suppliers.")
-        # In a real application, logic to load configs and run scraper for
-        # all suppliers would be called here.
-        logging.info("Simulating scraping for all suppliers.") # Placeholder output
+        available_suppliers = get_available_suppliers()
+
+        logging.info(f"Scraping {len(available_suppliers)} suppliers: {', '.join(available_suppliers)}")
+        for supplier in available_suppliers:
+            run_supplier(supplier)
+        logging.info("Scraping process finished for all configured suppliers.")
+
 
 def set_up_argparse():
     parser = argparse.ArgumentParser(description="Run the production pricing scraper.")
@@ -49,18 +51,21 @@ def set_up_argparse():
         "--supplier",
         type=str,
         help="Name of the specific supplier to scrape (e.g., 'steel_and_tube', 'wakefield_metals'). If not specified, all configured suppliers will be scraped.",
-        # Removed 'choices' to avoid hardcoding the list of suppliers in main.py
     )
     parser.add_argument(
         "--list-suppliers",
         action="store_true",
-        help="List all configured suppliers instead of scraping."
+        help="List all configured suppliers instead of scraping.",
     )
 
     return parser
 
+
 def main():
     logging.info("Starting pricing scraper production run...")
+
+    # Load all suppliers at the start
+    load_all_suppliers()
 
     parser = set_up_argparse()
     args = parser.parse_args()
@@ -72,6 +77,7 @@ def main():
         start_scraping_process(args.supplier)
 
     logging.info("Pricing scraper production script finished.")
+
 
 if __name__ == "__main__":
     main()
